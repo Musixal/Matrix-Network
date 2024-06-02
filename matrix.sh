@@ -282,7 +282,7 @@ configure_main_node(){
      #Generating ssh key
     show_progress 3 9 | lolcat
 	if [[ ! -f $SSH_KEY ]]; then
-		ssh-keygen -T rsa -f /root/.ssh/id_rsa -N "" -q &> /dev/null
+		ssh-keygen -t rsa -f /root/.ssh/id_rsa -N "" -q &> /dev/null
 	fi
 	
 	# Change sshd config
