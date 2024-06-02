@@ -8,5 +8,5 @@
 اسکریپت زیر را در سرور خود (دبیان یا اوبونتو) اجرا کنید:
 
 ```
-wget -Nq raw.githubusercontent.com/Musixal/matrix-network/main/matrix.sh && bash matrix.sh
+wget -Nq https://raw.githubusercontent.com/Musixal/matrix-network/main/matrix.sh && bash matrix.sh
 ```
