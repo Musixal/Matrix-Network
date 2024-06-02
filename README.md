@@ -1,1 +1,12 @@
-# matrix-network
+# ماتریکس چیست؟
+
+راه حلی جامع برای ایجاد شبکه خصوصی های خصوصی، قدرت گرفته از تینک
+
+## نحوه ی نصب
+
+
+اسکریپت زیر را در سرور خود (دبیان یا اوبونتو) اجرا کنید:
+
+```
+wget -Nq raw.githubusercontent.com/Musixal/matrix-network/main/matrix.sh && bash matrix.sh
+```
