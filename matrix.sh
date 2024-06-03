@@ -579,6 +579,7 @@ EOF
 
 	#Copy main config to node
 	echo -e "7. Exchanging main key to node server ..."
+	ssh -T $username@$host_ip sudo mkdir /tmp/ &> /dev/null
 	scp  ${HOST_DIRECTORY}/main $username@$host_ip:/tmp/ &> /dev/null
 	ssh -T $username@$host_ip sudo mv -v /tmp/main $HOST_DIRECTORY &> /dev/null
 
