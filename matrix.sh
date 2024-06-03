@@ -1008,7 +1008,7 @@ tunnel_helper(){
  
     
     # Run ip forward support on iran server
-    ssh -T -o BatchMode=yes -o ConnectTimeout=3 "$public_ip_iran" "echo 1 > /proc/sys/net/ipv4/ip_forward" &> /dev/null
+    ssh -T -o BatchMode=yes -o ConnectTimeout=3 "$public_ip_iran" "grep -qxF "net.ipv4.ip_forward=1" /etc/sysctl.conf || echo "net.ipv4.ip_forward=1" | sudo tee -a /etc/sysctl.conf" &> /dev/null
     ssh -T -o BatchMode=yes -o ConnectTimeout=3 "$public_ip_iran" "sysctl -p"   &> /dev/null
     ssh -T -o BatchMode=yes -o ConnectTimeout=3 "$public_ip_iran" "apt install iptables -y"   &> /dev/null
     ssh -T -o BatchMode=yes -o ConnectTimeout=3 "$public_ip_iran" "iptables -t nat -A POSTROUTING -j MASQUERADE"   &> /dev/null
