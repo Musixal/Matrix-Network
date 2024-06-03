@@ -170,12 +170,29 @@ install_sshpass() {
         fi
     fi
 }
+install_bc() {
+    if ! command -v bc &> /dev/null; then
+        # Check if the system is using apt package manager
+        if command -v apt-get &> /dev/null; then
+            colorize yellow "bc is not installed. Installing...\n"
+            #apt-get update &> /dev/null
+            apt-get install -y bc  &> /dev/null
+            colorize green "bc installed successfully.\n"
+            sleep 1
+        else
+            colorize red "Error: Unsupported package manager."
+            press_key
+            exit 1
+        fi
+    fi
+}
 
 #Install required packages
 install_core
 install_lolcat
 install_boxes
 install_sshpass
+install_bc
 
 
 #_________________________________________Configurating Main Node ___________________________________
