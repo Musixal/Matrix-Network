@@ -233,11 +233,11 @@ configure_main_node(){
  	if $expert; then
   		read -p "	[-] Address family (ipv4|ipv6|any): " add_family
 		if [ -z "$add_family" ]; then
-    		add_family='any'
+    		add_family='ipv4'
 		fi
     	echo ''
     else
-    	add_family='any'
+    	add_family='ipv4'
     fi
     
     # Direct Only  / EXPERT value______________________
@@ -466,11 +466,11 @@ add_new_node(){
  	if $expert; then
   		read -p "	[-] Address family (ipv4|ipv6|any): " add_family
   		if [ -z "$add_family" ]; then
-    		add_family='any'
+    		add_family='ipv4'
     	fi
     	echo ''
     else
-    	add_family='any'
+    	add_family='ipv4'
     fi 	
 
     
