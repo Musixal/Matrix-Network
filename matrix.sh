@@ -1047,7 +1047,7 @@ display_menu() {
     clear
     display_logo | lolcat -S 40
     echo ''
-    echo -e '[﹡]    Unified Virtual Private Network Manager   [﹡]' | lolcat -S 30 -i -p 50 -F 0.5 -t
+    echo -e '[﹡]    Unified Virtual Private Network Manager   [﹡]' | lolcat -S 30 
     echo -e '[﹡]    Version: 1.0                              [﹡]' | lolcat -S 3
     echo -e '[﹡]    Developer: Musixal                        [﹡]' | lolcat -S 5
     echo -e '[﹡]    Telegram Channel: @Gozar_Xray             [﹡]' | lolcat -S 7
