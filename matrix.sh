@@ -453,7 +453,7 @@ add_new_node(){
    	
     pattern='^[a-zA-Z0-9_]+$'
 	if [[ ! $node_name =~ $pattern ]]; then
-    	colorized red "	The name must consist only of a-z, A-Z, 0-9 and underscore.\n"
+    	colorize red "	The name must consist only of a-z, A-Z, 0-9 and underscore.\n"
     	press_key
     	return 1
 	fi
