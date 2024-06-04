@@ -288,6 +288,8 @@ configure_main_node(){
      echo "AddressFamily = $add_family" >> $CONFIG_PATH
      echo "DirectOnly = $direct_only" >> $CONFIG_PATH
      echo "AutoConnect = yes" >> $CONFIG_PATH
+     echo "PingInterval  = 10" >> $CONFIG_PATH
+     
     
      # Host file creator 
      show_progress 2 9 | lolcat
@@ -1036,9 +1038,9 @@ tunnel_helper(){
 #_________________________________________Main Menu and related functions______________
 check_service_status(){
     if  systemctl is-active --quiet "tinc@matrix"; then
-        echo -e "[﹡]    Matrix service status: Running            [﹡]" | lolcat -S 11
+        echo -e "[﹡]    Matrix service status: Running            [﹡]" 
     else
-        echo -e "[﹡]    Matrix service status: Stopped            [﹡]" | lolcat -S 11
+        echo -e "[﹡]    Matrix service status: Stopped            [﹡]" 
     fi
 }
 
@@ -1048,20 +1050,21 @@ display_menu() {
     display_logo | lolcat -S 40
     echo ''
     echo -e '[﹡]    Unified Virtual Private Network Manager   [﹡]' | lolcat -S 30 -i -p 50 -F 0.5 -t
-    echo -e '[﹡]    Version: 1.0                              [﹡]' | lolcat -S 3
-    echo -e '[﹡]    Developer: Musixal                        [﹡]' | lolcat -S 5
-    echo -e '[﹡]    Telegram Channel: @Gozar_Xray             [﹡]' | lolcat -S 7
-    echo -e '[﹡]    Github: github.com/Musixal/matrix-network [﹡]' | lolcat -S 9
+    echo -e '[﹡]    Powered by Tinc Mesh Network              [﹡]' 
+    echo -e '[﹡]    Version: 1.0                              [﹡]' 
+    echo -e '[﹡]    Developer: Musixal                        [﹡]' 
+    echo -e '[﹡]    Telegram Channel: @Gozar_Xray             [﹡]' 
+    echo -e '[﹡]    Github: github.com/Musixal/matrix-network [﹡]' 
 	check_service_status
     
     echo ''
-    colorize normal "	[1] Main Node Configuration" | lolcat -F 0.1 -S 10
-    colorize normal "	[2] New Node Registration" | lolcat -S 20
-    colorize normal "	[3] Node Health Monitor" | lolcat -S 30
-    colorize normal "	[4] Node Administration Center" | lolcat -S 40
-    colorize normal "	[5] Tunnel Assistant Wizard" | lolcat -S 50
-    colorize normal "	[6] Update Utility" | lolcat -S 50
-    echo -e "	[7] Exit" | lolcat -S 60
+    colorize green "	[1] Main Node Configuration" 
+    colorize cyan "	[2] New Node Registration" 
+    colorize yellow "	[3] Node Health Monitor" 
+    colorize red "	[4] Node Administration Center" 
+    colorize reset "	[5] Tunnel Assistant Wizard" 
+    colorize reset "	[6] Update Utility" 
+    echo -e "	[7] Exit" 
     echo ''
     echo "	══════════════════════════════════════" | lolcat
 }
@@ -1088,4 +1091,3 @@ do
     display_menu
     read_option
 done
-
