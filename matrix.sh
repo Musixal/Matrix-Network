@@ -795,7 +795,7 @@ remove_garbage_node (){
     fi
     
     local CONFIG_FILE=${HOST_DIRECTORY}/${1}
-    sed -i "/ConnectTo = $S1/d" $CONFIG_PATH  &> /dev/null
+    sed -i "/ConnectTo = ${1}/d" $CONFIG_PATH  &> /dev/null
 	rm -rf "$CONFIG_FILE"  &> /dev/null
 	echo -e  "	\033[1mGarbage fils of $1 node deleted from database successfully\033[0m" | boxes -d nuke | lolcat
 	echo ''
@@ -837,7 +837,7 @@ systemctl stop tinc@matrix &> /dev/null
 systemctl disable tinc@matrix &> /dev/null
 rm -rf "$CONFIG_DIRECTORY" &> /dev/null
 EOF
-		sed -i "/ConnectTo = $S1/d" $CONFIG_PATH &> /dev/null
+		sed -i "/ConnectTo = ${1}/d" $CONFIG_PATH &> /dev/null
 		rm -rf "$CONFIG_FILE"  &> /dev/null
 		echo -e  "	\033[1mMatrix on $1 node deleted successfully\033[0m"  | boxes -d nuke | lolcat
 		echo ''
