@@ -1051,7 +1051,7 @@ display_menu() {
     echo ''
     echo -e '[﹡]    Unified Virtual Private Network Manager   [﹡]' | lolcat -S 30 -i -p 50 -F 0.5 -t
     echo -e '[﹡]    Powered by Tinc Mesh Network              [﹡]' 
-    echo -e '[﹡]    Version: 1.0                              [﹡]' 
+    echo -e '[﹡]    Version: 1.0.1                            [﹡]' 
     echo -e '[﹡]    Developer: Musixal                        [﹡]' 
     echo -e '[﹡]    Telegram Channel: @Gozar_Xray             [﹡]' 
     echo -e '[﹡]    Github: github.com/Musixal/matrix-network [﹡]' 
