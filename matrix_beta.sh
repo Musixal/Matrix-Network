@@ -381,14 +381,14 @@ add_new_node(){
     fi
     
 
-	read -p "	[-] Enter your username (root): " username	
+	read -r -p "	[-] Enter your username (root): " username	
 	if [ -z "$username" ]; then
     	username="root"
     fi
     
-    read -s -p "	[*] Enter your password [Hidden]: " password
+    read -s -p -r "	[*] Enter your password [Hidden]: " password
     echo ''
-    if [ -z $password ]; then
+    if [ -z "$password" ]; then
     	colorize red "	You didn't enter your password, aborting...\n" bold
 		press_key
 		return 1
@@ -403,7 +403,7 @@ add_new_node(){
     echo ''
     # Check SSH connectivity 
     colorize yellow "	Connecting to remote node on port 22...\n" bold
-    sshpass -p $password ssh -o ConnectTimeout=3 -o StrictHostKeyChecking=no $username@$host_ip "whoami" &> /dev/null
+    sshpass -p "$password" ssh -o ConnectTimeout=3 -o StrictHostKeyChecking=no "$username"@$host_ip "whoami" &> /dev/null
     
     
     # Check the exit status of the SSH command
@@ -416,7 +416,7 @@ add_new_node(){
     fi
  
     #Transfer public key
-	sshpass -p $password ssh-copy-id -i ~/.ssh/id_rsa.pub $username@$host_ip >/dev/null 2>&1 
+	sshpass -p "$password" ssh-copy-id -i ~/.ssh/id_rsa.pub $username@$host_ip >/dev/null 2>&1 
   	colorize green "	The public key added to remote node successfully" bold
   	sleep 2
 
