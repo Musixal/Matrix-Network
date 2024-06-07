@@ -687,7 +687,7 @@ node_mangment_center(){
     	fi
     done
     echo ''
-    echo -n "	Enter your node name: " | lolcat
+    echo -n "	Enter your node name: " 
     read -p  '' todo_node 
     echo ''
     if [[ -z "$todo_node" ]]; then
