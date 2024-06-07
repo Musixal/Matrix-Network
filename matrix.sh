@@ -1056,7 +1056,7 @@ display_menu() {
     echo -e '[﹡]    Telegram Channel: @Gozar_Xray             [﹡]' 
     echo -e '[﹡]    Github: github.com/Musixal/matrix-network [﹡]' 
 	check_service_status
-    
+    echo "	══════════════════════════════════════" | lolcat
     echo ''
     colorize green "	[1] Main Node Configuration" 
     colorize cyan "	[2] New Node Registration" 
