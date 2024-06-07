@@ -205,7 +205,7 @@ configure_main_node(){
 	colorize green "	What do you prefer?\n" bold
 	colorize yellow "	[1] Simple Mode?"
 	colorize yellow "	[2] Expert Mode?" 
-    echo -n "	[-] Enter your choice [1 or 2]: " | lolcat
+    echo -n "	[-] Enter your choice [1 or 2]: " 
     read -p  '' choice 
     echo ''
     
@@ -282,7 +282,7 @@ configure_main_node(){
     
     
      # Configs file creator 
-     show_progress 1 9 | lolcat
+     show_progress 1 9 
      echo "Name = $node_name" > $CONFIG_PATH
      echo "Device = $device" >> $CONFIG_PATH
      echo "AddressFamily = $add_family" >> $CONFIG_PATH
@@ -292,33 +292,33 @@ configure_main_node(){
      
     
      # Host file creator 
-     show_progress 2 9 | lolcat
+     show_progress 2 9
      HOST_FILE="${HOST_DIRECTORY}/${node_name}"
      echo "Address = $SERVER_IP" > $HOST_FILE
      echo "Subnet = $subnet" >> $HOST_FILE
      echo "Port = $port" >> $HOST_FILE
      
      #Generating ssh key
-    show_progress 3 9 | lolcat
+    show_progress 3 9 
 	if [[ ! -f $SSH_KEY ]]; then
 		ssh-keygen -t rsa -f /root/.ssh/id_rsa -N "" -q &> /dev/null
 	fi
 	
 	# Change sshd config
-	show_progress 4 9 | lolcat
+	show_progress 4 9
 	sed -i 's/#GatewayPorts no/GatewayPorts yes/' /etc/ssh/sshd_config	&> /dev/null
 
 	# Build RSA Keys
-	show_progress 4 9 | lolcat
+	show_progress 4 9 
 	tincd -n matrix -K4096 &> /dev/null
 	
 	# Create route subnet
-	show_progress 5 9 | lolcat
+	show_progress 5 9
     local route_subnet=$(echo $subnet | cut -d'.' -f1-3)
     local route_subnet="${route_subnet}.0/24"
 
 	# Build tinc-up 
-	show_progress 6 9 | lolcat
+	show_progress 6 9 
 	cat <<EOF > "/etc/tinc/matrix/tinc-up"
 #!/bin/bash
 /sbin/ip link set \$INTERFACE up
@@ -327,7 +327,7 @@ configure_main_node(){
 EOF
 
 	# Build tinc-up 
-	show_progress 7 9 | lolcat
+	show_progress 7 9 
 	cat <<EOF > "/etc/tinc/matrix/tinc-down"
 #!/bin/bash
 /sbin/ip route del $route_subnet dev \$INTERFACE
@@ -339,12 +339,12 @@ EOF
 	chmod +x /etc/tinc/matrix/tinc-{up,down} &> /dev/null
 
 	# Start Servies
-	show_progress 8 9 | lolcat
+	show_progress 8 9 
 	systemctl enable tinc@matrix &> /dev/null
 	systemctl start tinc@matrix &> /dev/null
 	
 	# Finsish it
-	show_progress 9 9 | lolcat
+	show_progress 9 9 
 	echo ''
 	colorize green "	The main node configuration completed successfully \n" bold
 	press_key
@@ -428,7 +428,7 @@ add_new_node(){
 	colorize green "	What do you prefer?\n" bold
 	colorize yellow "	[1] Simple Mode?"
 	colorize yellow "	[2] Expert Mode?" 
-    echo -n "	[-] Enter your choice [1 or 2]: " | lolcat
+    echo -n "	[-] Enter your choice [1 or 2]: " 
     read -p  '' choice 
     echo ''
     
@@ -727,7 +727,7 @@ node_mangment_center(){
     colorize reset "	[5] Back to main menu" | lolcat -S 50
     
     echo ''
-    echo -n "	Enter your choice [1-5]: " | lolcat
+    echo -n "	Enter your choice [1-5]: " 
     read -p  '' choice 
     
     case $choice in
@@ -762,7 +762,7 @@ change_port_number(){
 		echo ''
 		file_count=$(ls -d "$HOST_DIRECTORY"/* | wc -l)
 		counter=1
-		show_progress "$counter" "$file_count" | lolcat
+		show_progress "$counter" "$file_count" 
 	    for node in "${HOST_DIRECTORY}"/*; do
         	node_name=$(basename "$node")
         	if [[ $node_name != "main" ]]; then
@@ -770,7 +770,7 @@ change_port_number(){
         		ssh -o BatchMode=yes -T "$ip_address" "sed -i 's/Port = [0-9]*/Port = $new_port/' \"$CONFIG_FILE\"" &> /dev/null
         		ssh -o BatchMode=yes -T "$ip_address" "systemctl restart tinc@matrix"  &> /dev/null
         		((counter++))  # Increment the counter
-        		show_progress "$counter" "$file_count" | lolcat
+        		show_progress "$counter" "$file_count" 
         	fi
    		 done
 	else
