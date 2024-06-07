@@ -203,7 +203,7 @@ configure_main_node(){
 	expert=false
 	
 	colorize green "	What do you prefer?\n" bold
-	colorize yellow "	[1] Simple Mode?"
+	colorize yellow "	[1] Easy Mode?"
 	colorize yellow "	[2] Expert Mode?" 
     echo -n "	[-] Enter your choice [1 or 2]: " 
     read -p  '' choice 
@@ -229,29 +229,7 @@ configure_main_node(){
 	# Device Name, Static value ______________________
  	device='/dev/net/tun' #No need to change it
  	
- 	# Address Family / EXPERT value______________________
- 	if $expert; then
-  		read -p "	[-] Address family (ipv4|ipv6|any): " add_family
-		if [ -z "$add_family" ]; then
-    		add_family='ipv4'
-		fi
-    	echo ''
-    else
-    	add_family='ipv4'
-    fi
-    
-    # Direct Only  / EXPERT value______________________
-    if $expert; then
-		read -p "	[-] Direct only (yes/no): " direct_only
-		if [ -z "$direct_only" ]; then
-    		direct_only='yes'
-		fi
-		echo ''
-	else
-		direct_only='yes'
-	fi
-    
-    # Server IP / Get it from hostname______________________
+ 	 # Server IP / Get it from hostname______________________
     SERVER_IP=$(hostname -I | awk '{print $1}') #Easy !
     colorize magenta "	[*] Main Node IP Address: ${SERVER_IP}"
     echo ''
@@ -267,10 +245,36 @@ configure_main_node(){
     fi
     echo ''	
     
+ 	# Address Family / EXPERT value______________________
+ 	if $expert; then
+ 		echo -ne "	[-] Address family (${GREEN}ipv4${NC}|ipv6|any): "
+ 		read -r add_family
+		if [ -z "$add_family" ]; then
+    		add_family='ipv4'
+		fi
+    	echo ''
+    else
+    	add_family='ipv4'
+    fi
+    
+    # Direct Only  / EXPERT value______________________
+    if $expert; then
+     	echo -ne "	[-] Direct only (${GREEN}yes${NC}/no): "
+ 		read -r direct_only
+		if [ -z "$direct_only" ]; then
+    		direct_only='yes'
+		fi
+		echo ''
+	else
+		direct_only='yes'
+	fi
+   
+    
     # Port / Simple value ______________________
-    read -p "	[-] Port Number (2096): " port
+    echo -ne "	[-] Port Number (${GREEN}2097${NC}): "
+    read -r port
     if [ -z "$port" ]; then
-       port="2096"
+       port="2097"
     fi
     # Validate if the input is a valid port number 
 	if ! [[ $port =~ ^[0-9]+$ && $port -ge 22 && $port -le 65535 ]]; then
@@ -279,7 +283,67 @@ configure_main_node(){
     	return 1
 	fi
 	echo ''
-    
+	
+	# Ping Interval  / EXPERT value______________________
+    if $expert; then
+     	echo -ne "	[-] Ping Interval (in seconds)(${GREEN}10${NC}): "
+ 		read -r ping_interval
+		if [ -z "$ping_interval" ]; then
+    		ping_interval='10'
+		fi
+		echo ''
+	else
+		ping_interval='10'
+	fi
+
+	
+    # ProcessPriority / EXPERT value______________________
+    if $expert; then
+     	echo -ne "	[-] ProcessPriority (low, normal, ${GREEN}high${NC}): "
+ 		read -r process_priority
+		if [ -z "$process_priority" ]; then
+    		process_priority='high'
+		fi
+		echo ''
+	else
+		process_priority='high'
+	fi
+	
+	# Cipher / EXPERT value______________________
+    if $expert; then
+     	echo -ne "	[-] Cipher (${GREEN}aes-128-cbc${NC}, aes-256-cbc, none): "
+ 		read -r cipher
+		if [ -z "$cipher" ]; then
+    		cipher='aes-128-cbc'
+		fi
+		echo ''
+	else
+		cipher='aes-128-cbc'
+	fi
+	
+    # Digest / EXPERT value______________________
+    if $expert; then
+     	echo -ne "	[-] Digest (${GREEN}md5${NC}, sha256, none): "
+ 		read -r digest
+		if [ -z "$digest" ]; then
+    		digest='md5'
+		fi
+		echo ''
+	else
+		digest='md5'
+	fi
+	
+	 # PTMU / EXPERT value______________________
+    if $expert; then
+     	echo -ne "	[-] PTMU (${GREEN}1514${NC}): "
+ 		read -r ptmu
+		if [ -z "$ptmu" ]; then
+    		ptmu='1514'
+		fi
+		echo ''
+	else
+		ptmu='1514'
+	fi
     
      # Configs file creator 
      show_progress 1 9 
@@ -288,15 +352,19 @@ configure_main_node(){
      echo "AddressFamily = $add_family" >> $CONFIG_PATH
      echo "DirectOnly = $direct_only" >> $CONFIG_PATH
      echo "AutoConnect = yes" >> $CONFIG_PATH
-     echo "PingInterval  = 10" >> $CONFIG_PATH
+     echo "PingInterval  = $ping_interval" >> $CONFIG_PATH
+     echo "ProcessPriority  = $process_priority" >> $CONFIG_PATH
      
     
      # Host file creator 
-     show_progress 2 9
+     show_progress 2 9 
      HOST_FILE="${HOST_DIRECTORY}/${node_name}"
      echo "Address = $SERVER_IP" > $HOST_FILE
      echo "Subnet = $subnet" >> $HOST_FILE
      echo "Port = $port" >> $HOST_FILE
+     echo "Cipher = $cipher" >> $HOST_FILE
+     echo "Digest = $digest" >> $HOST_FILE
+     echo "PTMU = $ptmu" >> $HOST_FILE
      
      #Generating ssh key
     show_progress 3 9 
@@ -305,7 +373,7 @@ configure_main_node(){
 	fi
 	
 	# Change sshd config
-	show_progress 4 9
+	show_progress 4 9 
 	sed -i 's/#GatewayPorts no/GatewayPorts yes/' /etc/ssh/sshd_config	&> /dev/null
 
 	# Build RSA Keys
@@ -313,7 +381,7 @@ configure_main_node(){
 	tincd -n matrix -K4096 &> /dev/null
 	
 	# Create route subnet
-	show_progress 5 9
+	show_progress 5 9 
     local route_subnet=$(echo $subnet | cut -d'.' -f1-3)
     local route_subnet="${route_subnet}.0/24"
 
@@ -381,14 +449,14 @@ add_new_node(){
     fi
     
 
-	read -r -p "	[-] Enter your username (root): " username	
+	read -p "	[-] Enter your username (root): " username	
 	if [ -z "$username" ]; then
     	username="root"
     fi
     
-    read -s -p -r "	[*] Enter your password [Hidden]: " password
+    read -s -p "	[*] Enter your password [Hidden]: " password
     echo ''
-    if [ -z "$password" ]; then
+    if [ -z $password ]; then
     	colorize red "	You didn't enter your password, aborting...\n" bold
 		press_key
 		return 1
@@ -403,7 +471,7 @@ add_new_node(){
     echo ''
     # Check SSH connectivity 
     colorize yellow "	Connecting to remote node on port 22...\n" bold
-    sshpass -p "$password" ssh -o ConnectTimeout=3 -o StrictHostKeyChecking=no "$username"@$host_ip "whoami" &> /dev/null
+    sshpass -p $password ssh -o ConnectTimeout=3 -o StrictHostKeyChecking=no $username@$host_ip "whoami" &> /dev/null
     
     
     # Check the exit status of the SSH command
@@ -416,7 +484,7 @@ add_new_node(){
     fi
  
     #Transfer public key
-	sshpass -p "$password" ssh-copy-id -i ~/.ssh/id_rsa.pub $username@$host_ip >/dev/null 2>&1 
+	sshpass -p $password ssh-copy-id -i ~/.ssh/id_rsa.pub $username@$host_ip >/dev/null 2>&1 
   	colorize green "	The public key added to remote node successfully" bold
   	sleep 2
 
@@ -446,7 +514,8 @@ add_new_node(){
     	press_key
     	return 1
     fi
- 
+   
+    
     if [[ -f "${HOST_DIRECTORY}/${node_name}" ]]; then
     	colorize red "	This node name is duplicate. you can't add it.\n"
     	press_key
@@ -461,12 +530,28 @@ add_new_node(){
 	fi
 	echo ''
 	
+	# Node IP  / We get it before _______________________________
+    colorize normal "	[*] Node IP Address: ${host_ip}"
+    echo ''
+	
+	# Subnet IP  / Simple value _______________________________
+    read -p "	[*] Subnet (172.16.1.x): " subnet
+    if [ -z "$subnet" ]; then
+    	colorize red "	The subnet value is mandatory.\n"
+    	press_key
+    	return 1
+    else
+       	subnet="${subnet}/32"
+    fi
+    echo ''	
+    
 	# Device Name / Static value by now _________________________
 	device='/dev/net/tun'
  	
  	# Address Family / Expert value _______________________________
  	if $expert; then
-  		read -p "	[-] Address family (ipv4|ipv6|any): " add_family
+ 		echo -ne "	[-] Address family (${GREEN}ipv4${NC}|ipv6|any): "
+ 		read -r add_family
   		if [ -z "$add_family" ]; then
     		add_family='ipv4'
     	fi
@@ -478,7 +563,8 @@ add_new_node(){
     
     # Direct Only / Expert value _______________________________
     if $expert; then
-   		read -p "	[-] Direct only (yes/no): " direct_only
+     	echo -ne "	[-] Direct only (${GREEN}yes${NC}/no): "
+ 		read -r direct_only
    		if [ -z "$direct_only" ]; then
     		direct_only='yes'
     	fi	
@@ -489,25 +575,11 @@ add_new_node(){
     	
 
     
-    # Node IP  / We get it before _______________________________
-    colorize normal "	[*] Node IP Address: ${host_ip}"
-    echo ''
-    
-    # Subnet IP  / Simple value _______________________________
-    read -p "	[*] Subnet (172.16.1.x): " subnet
-    if [ -z "$subnet" ]; then
-    	colorize red "	The subnet value is mandatory.\n"
-    	press_key
-    	return 1
-    else
-       	subnet="${subnet}/32"
-    fi
-    echo ''	
-    
     # Port Number  / Simple value _______________________________
-    read -p "	[-] Port Number (2096): " port
+    echo -ne "	[-] Port Number (${GREEN}2097${NC}): "
+    read -r port
     if [ -z "$port" ]; then
-    	port="2096"
+    	port="2097"
     fi
     # Validate if the input is a valid port number 
 	if ! [[ $port =~ ^[0-9]+$ && $port -ge 22 && $port -le 65535 ]]; then
@@ -517,6 +589,70 @@ add_new_node(){
 	fi
     echo ''
     
+    # Ping Interval  / EXPERT value______________________
+    if $expert; then
+     	echo -ne "	[-] Ping Interval (in seconds)(${GREEN}10${NC}): "
+ 		read -r ping_interval
+		if [ -z "$ping_interval" ]; then
+    		ping_interval='10'
+		fi
+		echo ''
+	else
+		ping_interval='10'
+	fi
+
+	
+	
+	    # ProcessPriority / EXPERT value______________________
+    if $expert; then
+     	echo -ne "	[-] ProcessPriority (low, normal, ${GREEN}high${NC}): "
+ 		read -r process_priority
+		if [ -z "$process_priority" ]; then
+    		process_priority='high'
+		fi
+		echo ''
+	else
+		process_priority='high'
+	fi
+	
+		# Cipher / EXPERT value______________________
+    if $expert; then
+     	echo -ne "	[-] Cipher (${GREEN}aes-128-cbc${NC}, aes-256-cbc, none): "
+ 		read -r cipher
+		if [ -z "$cipher" ]; then
+    		cipher='aes-128-cbc'
+		fi
+		echo ''
+	else
+		cipher='aes-128-cbc'
+	fi
+	
+    # Digest / EXPERT value______________________
+    if $expert; then
+     	echo -ne "	[-] Digest (${GREEN}md5${NC}, sha256, none): "
+ 		read -r digest
+		if [ -z "$digest" ]; then
+    		digest='md5'
+		fi
+		echo ''
+	else
+		digest='md5'
+	fi
+	
+		
+	 # PTMU / EXPERT value______________________
+    if $expert; then
+     	echo -ne "	[-] PTMU (${GREEN}1514${NC}): "
+ 		read -r ptmu
+		if [ -z "$ptmu" ]; then
+    		ptmu='1514'
+		fi
+		echo ''
+	else
+		ptmu='1514'
+	fi
+	
+	
     # Create route subnet. may be due a silly code by me
     local route_subnet=$(echo $subnet | cut -d'.' -f1-3)
     local route_subnet="${route_subnet}.0/24" 
@@ -541,9 +677,11 @@ mkdir -p /etc/tinc/matrix/hosts/ &> /dev/null
 sudo tee /etc/tinc/matrix/tinc.conf &> /dev/null <<CONFIG
 Name = $node_name
 Device = $device
+AddressFamily = $add_family
 DirectOnly = $direct_only
 AutoConnect = yes
-AddressFamily = $add_family
+PingInterval  = $ping_interval"
+ProcessPriority  = $process_priority
 CONFIG
 
 echo -e "3. Generating host file..."
@@ -551,6 +689,9 @@ sudo tee /etc/tinc/matrix/hosts/$node_name &> /dev/null <<NODE
 Address = $host_ip
 Subnet = $subnet
 Port = $port
+Cipher = $cipher
+Digest = $digest
+PTMU = $ptmu
 NODE
 
 echo -e "4. Generating RSA key file..."
@@ -1044,19 +1185,27 @@ check_service_status(){
     fi
 }
 
+# Color codes
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+CYAN='\e[36m'
+MAGENTA="\e[95m"
+NC='\033[0m' # No Color
+
 # Function to display menu
 display_menu() {
     clear
     display_logo | lolcat -S 40
     echo ''
-    echo -e '[﹡]    Unified Virtual Private Network Manager   [﹡]' | lolcat 
+    echo -e '[﹡]    Unified Virtual Private Network Manager   [﹡]' | lolcat
     echo -e '[﹡]    Powered by Tinc Mesh Network              [﹡]' 
     echo -e '[﹡]    Version: 1.0.1                            [﹡]' 
     echo -e '[﹡]    Developer: Musixal                        [﹡]' 
     echo -e '[﹡]    Telegram Channel: @Gozar_Xray             [﹡]' 
     echo -e '[﹡]    Github: github.com/Musixal/matrix-network [﹡]' 
 	check_service_status
-    echo "	══════════════════════════════════════" | lolcat
+    echo "	══════════════════════════════════════" | lolcat  
     echo ''
     colorize green "	[1] Main Node Configuration" 
     colorize cyan "	[2] New Node Registration" 
@@ -1071,7 +1220,7 @@ display_menu() {
 
 # Function to read user input
 read_option() {
-    echo -n "	Enter your choice: "
+    echo -n "	Enter your choice: " 
     read -p  '' choice 
     case $choice in
         1) configure_main_node ;;
