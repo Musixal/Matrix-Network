@@ -8,7 +8,7 @@
 اسکریپت زیر را در سرور خود (دبیان یا اوبونتو) اجرا کنید:
 
 ```
-bash <(curl -Ls https://raw.githubusercontent.com/Musixal/matrix-network/main/matrix.sh)
+bash <(curl -Ls --ipv4 https://raw.githubusercontent.com/Musixal/matrix-network/main/matrix.sh)
 
 ```
 
